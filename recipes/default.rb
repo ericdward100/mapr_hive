@@ -12,13 +12,20 @@ log "\n=========== Start mapr_hive default.rb =============\n"
 #Parameter settings, user definitions, etc
 #include_recipe "mapr_installation"
 
+#hive_install_version=`yum list --showduplicates mapr-hive|grep "#{node[:mapr][:hive_version]}"|awk '{print $2}'|tr -d '\n'`
+
+#hive_install_version=`yum list --showduplicates mapr-oozie`
+
+#print "\n\n\n\n\\n\n\n\HIVE_VERSION = \"#{hive_install_version}\"\n\n\n\n\n\n\n"
+
+
 ruby_block "Set HIVE_HOME in /etc/profile" do
   block do
         file  = Chef::Util::FileEdit.new("/etc/profile")
 
         file.search_file_delete_line("HIVE_HOME")
 
-        file.insert_line_if_no_match("export HIVE_HOME=","export HIVE_HOME=#{node[:mapr][:home]}/hive/#{node[:mapr][:hive_version]}")
+        file.insert_line_if_no_match("export HIVE_HOME=","export HIVE_HOME=#{node[:mapr][:home]}/hive/hive-#{node[:mapr][:hive_version]}")
         file.insert_line_if_no_match("export PATH=\$PATH:\$HIVE_HOME/bin","export PATH=$PATH:$HIVE_HOME/bin")
 
         file.write_file
@@ -55,7 +62,7 @@ end
 #end
 
 
-include_recipe "mapr_hive::mapr_hive-site_config"
+#include_recipe "mapr_hive::mapr_hive-site_config"
 
 
 #RUN /opt/mapr/server/configure.sh -R
